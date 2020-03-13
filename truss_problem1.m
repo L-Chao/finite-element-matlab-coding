@@ -90,6 +90,3 @@ for i = 1:element_number
     end
     line(mx, my, 'color', 'black', 'linestyle', ':')
 end
-    
-    
-    
