@@ -17,20 +17,7 @@ end
 dof = sum(sum(element_dispalcement));
 Gdof = 2*node_number;
 % element stiffness matrix
-K_e = E*A*[
-    1, 0, -1, 0;
-    0, 0, 0, 0;
-    -1, 0, 1, 0;
-    0, 0, 0, 0;];
-% element mass matrix
-% Concentrated mass matrix
-M_e = density*A/2*eye(4);
-% Consistent mass matrix
-% M_e = density*A/4*[
-%     2, 0, 1, 0;
-%     0, 2, 0, 1;
-%     1, 0, 2, 0;
-%     0, 1, 0, 2];
+
 % structure stiffness matrix
 K_s = zeros(Gdof);
 % structure mass matrix
@@ -42,21 +29,32 @@ for i = 1:element_number
     y1 = node_coordinate(indice(1), 2);
     x2 = node_coordinate(indice(2), 1);
     y2 = node_coordinate(indice(2), 2);
-    element_length = sqrt((x2 - x1)^2 + (y2 - y1)^2);
-    C = (x2 - x1)/element_length;
-    S = (y2 - y1)/element_length;
-    lambda = [
-        C, S;
-        -S, C;];
+    L = sqrt((x2 - x1)^2 + (y2 - y1)^2);
+    l = (x2 - x1)/L;
+    m = (y2 - y1)/L;
     T = [
-        lambda, zeros(2);
-        zeros(2), lambda];
-    K_s(element_dof, element_dof) = K_s(element_dof, element_dof) + T'*K_e*T/element_length;
-    M_s(element_dof, element_dof) = M_s(element_dof, element_dof) + T'*M_e*T*element_length;
+        l, m, 0, 0;
+        -m, l, 0, 0;
+        0, 0, l, m;
+        0, 0, -m, l;];
+    K_e = A*E/L*T'*[
+        1, 0, -1, 0;
+        0, 0, 0, 0;
+        -1, 0, 1, 0;
+        0, 0, 0, 0;]*T;
+    
+%     M_e = A*density*L/2*T'*eye(4)*T;
+    M_e = A*density*L/6*T'*[
+        2, 0, 1, 0;
+        0, 2, 0, 1;
+        1, 0, 2, 0;
+        0, 1, 0, 2;]*T;
+    K_s(element_dof, element_dof) = K_s(element_dof, element_dof) + K_e;
+    M_s(element_dof, element_dof) = M_s(element_dof, element_dof) + M_e;
 end
 %%
 % add constraint
-prescribed_dof = 2*(constraint(:, 1) -1) + constraint(:, 2);
+prescribed_dof = 2*(constraint(:, 1) - 1) + constraint(:, 2);
 K_s(prescribed_dof, :) = [];
 K_s(:, prescribed_dof) = [];
 M_s(prescribed_dof, :) = [];
