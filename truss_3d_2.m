@@ -1,4 +1,3 @@
-% Matlab 有限元结构动力学分析与工程应用, P74 truss examole
 clear;
 E = 6.89e10;
 
@@ -85,8 +84,8 @@ for i = 1:element_number
         T, -T;
         -T, T;];
     M_e = A*density*L/6*[
-        2*T, T;
-        T, 2*T;];
+        2*eye(3), eye(3);
+        eye(3), 2*eye(3);];
     K_s(element_dof, element_dof) = K_s(element_dof, element_dof) + K_e;
     M_s(element_dof, element_dof) = M_s(element_dof, element_dof) + M_e;
 end
