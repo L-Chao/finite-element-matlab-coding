@@ -3,7 +3,7 @@ E = 6.89e10;
 
 density = 2.77e3;
 
-A = 2e-2;
+A = 2e-02;
 
 node_coordinate = 1e-3*[
     952.5, 0, 5080;
@@ -58,6 +58,19 @@ constraint = [
     10, 2;
     10, 3;];
 
+element_displacement = ones(node_number, 3);
+for i = 1:size(constraint, 1)
+    element_displacement(constraint(i, 1), constraint(i, 2)) = 0;
+end
+dof = 0;
+for i = 1:node_number
+    for j = 1:3
+        if element_displacement(i, j) ~= 0
+            dof = dof + 1;
+            element_displacement(i, j) = dof;
+        end
+    end
+end
 Gdof = 3*node_number;
 % structure stiffness matrix
 K_s = zeros(Gdof);
@@ -102,4 +115,7 @@ M_s(:, prescribed_dof) = [];
 % v: eigenvector
 frequency = sqrt(diag(d))/(2*pi);
 [frequency, indexf] = sort(frequency);
-d = d(:, indexf);
+v = v(:, indexf);
+%%
+mode = 1;
+model_shape(mode, element_node, node_coordinate, element_displacement, v)

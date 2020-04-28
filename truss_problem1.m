@@ -14,7 +14,15 @@ for i = 1:size(constraint, 1)
     element_dispalcement(constraint(i, 1), constraint(i, 2)) = 0;
 end
 
-dof = sum(sum(element_dispalcement));
+dof = 0;
+for i = 1:node_number
+    for j = 1:2
+        if element_dispalcement(i, j) ~=0
+            dof = dof + 1;
+            element_dispalcement(i, j) = dof;
+        end
+    end
+end
 Gdof = 2*node_number;
 % element stiffness matrix
 
@@ -44,11 +52,11 @@ for i = 1:element_number
         0, 0, 0, 0;]*T;
     
 %     M_e = A*density*L/2*T'*eye(4)*T;
-    M_e = A*density*L/6*T'*[
+    M_e = A*density*L/6*[
         2, 0, 1, 0;
         0, 2, 0, 1;
         1, 0, 2, 0;
-        0, 1, 0, 2;]*T;
+        0, 1, 0, 2;];
     K_s(element_dof, element_dof) = K_s(element_dof, element_dof) + K_e;
     M_s(element_dof, element_dof) = M_s(element_dof, element_dof) + M_e;
 end
@@ -65,9 +73,9 @@ M_s(:, prescribed_dof) = [];
 % v: eigenvector
 frequency = sqrt(diag(d))/(2*pi);
 [frequency, indexf] = sort(frequency);
-d = d(:, indexf);
+v = v(:, indexf);
 %%
-mode = 1;
+mode = 7;
 for i = 1:element_number
     x = [node_coordinate(element_node(i, 1), 1), node_coordinate(element_node(i, 2), 1)];
     y = [node_coordinate(element_node(i, 1), 2), node_coordinate(element_node(i, 2), 2)];
