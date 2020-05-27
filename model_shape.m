@@ -1,4 +1,4 @@
-function model_shape(mode, element_node, node_coordinate, element_displacement, v)
+function L_d = model_shape(mode, element_node, node_coordinate, element_displacement, v)
 % v : model shape matrix
 figure()
 title(['mode = ', num2str(mode)])
@@ -13,23 +13,24 @@ for i = 1:size(element_node, 1)
     mz = [0; 0];
     for j = 1:2
         if element_displacement(element_node(i, j), 1) ~= 0
-            mx(j) = x(j) + v(element_displacement(element_node(i, j), 1), mode)*10;
+            mx(j) = x(j) + v(element_displacement(element_node(i, j), 1), mode);
         else
             mx(j) = x(j);
         end
         if element_displacement(element_node(i, j), 2) ~=0
-            my(j) = y(j) + v(element_displacement(element_node(i, j), 2), mode)*10;
+            my(j) = y(j) + v(element_displacement(element_node(i, j), 2), mode);
         else
             my(j) = y(j);
         end
         if element_displacement(element_node(i, j), 3) ~=0
-            mz(j) = z(j) + v(element_displacement(element_node(i, j), 3), mode)*10;
+            mz(j) = z(j) + v(element_displacement(element_node(i, j), 3), mode);
         else
             mz(j) = z(j);
         end
     end
     if i == 10
         plot3(mx, my, mz, 'g--')
+        L_d = norm([mx(1) - mx(2), my(1) - my(2), mz(1) - mz(2)]);
     else
         plot3(mx, my, mz, 'r--')
     end

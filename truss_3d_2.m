@@ -2,20 +2,21 @@ clear;
 E = 6.89e10;
 
 density = 2.77e3;
-
-A = 2e-02;
+R = 25e-3;
+A = pi*R^2;
 
 node_coordinate = 1e-3*[
     952.5, 0, 5080;
     -952.5,0, 5080;
-    -952.5, 952.5, 2540;
+    -952.5, 952.5, 2540;%
     952.5, 952.5, 2540;
     952.5, -952.5, 2540;
-    -952.5, -952.5, 2540;
+    -952.5, -952.5, 2540;%
     -2540, 2540, 0;
     2540, 2540, 0;
     2540, -2540, 0;
     -2540, -2540, 0;];
+
 element_node = [
     1, 2;
     1, 4;
@@ -86,6 +87,9 @@ for i = 1:element_number
     y2 = node_coordinate(indice(2), 2);
     z2 = node_coordinate(indice(2), 3);
     L = sqrt((x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2);
+    if i == 10
+        L10 = L;
+    end
     l = (x2 - x1)/L;
     m = (y2 - y1)/L;
     n = (z2 - z1)/L;
@@ -118,4 +122,4 @@ frequency = sqrt(diag(d))/(2*pi);
 v = v(:, indexf);
 %%
 mode = 1;
-model_shape(mode, element_node, node_coordinate, element_displacement, v)
+L_d = model_shape(mode, element_node, node_coordinate, element_displacement, v)
